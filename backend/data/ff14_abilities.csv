@@ -1,0 +1,53 @@
+Name,Job,Recast,Duration,Type,Amount,Target
+Sentinel,PLD,120,15,Mit,30.00%,Self
+Cover,PLD,120,12,Other,,Target
+Hallowed Ground,PLD,420,10,Invuln,,Self
+Bulwark,PLD,90,10,Mit,,Self
+Divine Veil,PLD,90,30,Shield,,Party
+Intervention,PLD,10,8,Mit,10.00%,Target
+Passage of Arms,PLD,120,3,Mit,15.00%,Party
+Holy Sheltron,PLD,5,8,Mit,15.00%,Self
+Rampart,PLD,90,20,Mit,20.00%,Self
+Reprisal,PLD,60,10,Mit,10.00%,Party
+Thrill of Battle,WAR,90,10,Heal,20.00%,Self
+Vengeance,WAR,120,15,Mit,30.00%,Self
+Holmgang,WAR,240,10,Invuln,,Self
+Raw Intuition,WAR,25,6,Mit,10.00%,Self
+Equilibrium,WAR,60,,Heal,2200,Self
+Shake It Off,WAR,90,30,Shield,15.00%,Party
+Nascent Flash,WAR,25,8,Mit,10.00%,Target
+Rampart,WAR,90,20,Mit,20.00%,Self
+Reprisal,WAR,60,10,Mit,10.00%,Party
+Essential Dignity,AST,40,,Heal,900,Target
+Synastry,AST,120,,Heal,,Target
+Collective Unconscious,AST,60,5,Mit,10.00%,Party
+Celestial Opposition,AST,60,,Heal,700,Party
+Earthly Star,AST,60,,Heal,720,Party
+Celestial Intersection,AST,30,30,Shield,400,Target
+Horoscope,AST,60,,Heal,400,Party
+Neutral Sect,AST,120,30,Shield,312.5,Party
+Minor Arcana,AST,60,,Heal,400,Party
+Soteria,SGE,90,,Heal,476,Target
+Kerachole,SGE,30,,Shield,10.00%,Party
+Ixochole,SGE,30,,Heal,400,Party
+Zoe,SGE,90,,Other,50.00%,Self
+Pepsis,SGE,30,,Heal,350,Party
+Physis,SGE,60,,Heal,650,Party
+Taurochole,SGE,45,15,Mit,10.00%,Target
+Haima,SGE,120,15,Shield,1500,Target
+Rhizomata,SGE,90,,Other,,Self
+Holos,SGE,120,20,Mit,10.00%,Party
+Panhaima,SGE,120,15,Shield,1000,Party
+Mantra,MNK,90,,Other,10.00%,Party
+Riddle of Earth,MNK,120,10,Mit,20.00%,Self
+Bloodbath,MNK,90,20,Heal,,Self
+Feint,MNK,90,10,Mit,5.00%,Party
+Second Wind,MNK,120,,Heal,500,Self
+Third Eye,SAM,15,,Mit,10.00%,Self
+Bloodbath,SAM,90,20,Heal,,Self
+Feint,SAM,90,10,Mit,5.00%,Party
+Second Wind,SAM,120,,Heal,500,Self
+Tactician,MCH,120,15,Mit,10.00%,Party
+Dismantle,MCH,120,10,Mit,10.00%,Party
+Second Wind,MCH,120,,Heal,500,Self
+Addle,RDM,90,10,,10.00%,Party
