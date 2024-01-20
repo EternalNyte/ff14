@@ -3,9 +3,21 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# TypeScript
+*.tsbuildinfo
+*.js
+*.js.map
+*.d.ts
+
 # React
 /build/
-/node_modules/
+/.next/
+/.cache/
+/public/
+
+# IDE directories
+.vscode/
+.idea/
 
 # OS generated files
 .DS_Store
@@ -17,11 +29,4 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
-
-# IDE files
-.vscode/
-.idea/
-
-# Log files
-*.log
 
