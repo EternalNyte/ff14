@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from './api';
 import { Container, Row, Col, Table } from 'react-bootstrap';
+import CheckboxList from './components/CheckboxList';
+import './App.css';
 
 const App: React.FC = () => {
   const [abilities, setAbilities] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchAbilities = async () => {
@@ -15,11 +18,23 @@ const App: React.FC = () => {
       }
     };
 
+    const fetchJobs = async () => {
+      try {
+        const response = await api.get('/api/jobs');
+        setJobs(response.data);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      }
+    };
+
     fetchAbilities();
+    fetchJobs();
   }, []);
 
   return (
     <Container>
+      <CheckboxList data={jobs} />
+      {/*
       <Row>
         <Col>
           <h1>Ability List</h1>
@@ -45,7 +60,7 @@ const App: React.FC = () => {
                 <tr key={ability.id}>
                   <td>{ability.id}</td>
                   <td>{ability.name}</td>
-                  <td>{ability.job}</td>
+                  <td>{jobs[ability.job_id-1].name}</td>
                   <td>{ability.recast}</td>
                   <td>{ability.duration}</td>
                   <td>{ability.type}</td>
@@ -57,6 +72,7 @@ const App: React.FC = () => {
           </Table>
         </Col>
       </Row>
+      */}
     </Container>
   );
 };
