@@ -5,7 +5,7 @@ import pymysql
 
 user = 'ringo_ff14'
 pw = 'ff14Pswd!'
-table_name = 'ff14_abilities'
+table_name = 'abilities'
 
 # MySQL Connection Configuration
 connection = pymysql.connect(host='localhost', user=user, password=pw, database='ff14')
@@ -16,10 +16,22 @@ truncate_sql = "TRUNCATE TABLE %s" % table_name
 cursor.execute(truncate_sql)
 
 # Read CSV and Insert Data
-csv_filename = 'ff14_abilities.csv'
+csv_filename = '../data/ff14_abilities.csv'
 df = pd.read_csv(csv_filename)
 
 df.replace({np.nan: None}, inplace=True)
+
+# Query the related table for foreign key values
+def get_foreign_key_value(entry):
+    # Customize the query based on your actual table structure
+    query = f"SELECT id FROM jobs WHERE short_name = '{entry}'"
+    cursor.execute(query)
+    result = cursor.fetchone()
+    return result[0] if result else None
+
+# Replace entries in the DataFrame with foreign key values
+df['job_id'] = df['Job'].apply(get_foreign_key_value)
+del df['Job']
 
 # Get column names from the CSV file
 columns = list(df.columns)
