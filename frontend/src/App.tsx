@@ -7,17 +7,17 @@ import './App.css';
 const App: React.FC = () => {
   const [abilities, setAbilities] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
+  const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
+
+  const handleToggle = async (jobId: number) => {
+    const updatedJobIds = selectedJobIds.includes(jobId)
+      ? selectedJobIds.filter((id) => id !== jobId)
+      : [...selectedJobIds, jobId];
+
+    setSelectedJobIds(updatedJobIds);
+  };
 
   useEffect(() => {
-    const fetchAbilities = async () => {
-      try {
-        const response = await api.get('/api/abilities');
-        setAbilities(response.data);
-      } catch (error) {
-        console.error('Error fetching abilities:', error);
-      }
-    };
-
     const fetchJobs = async () => {
       try {
         const response = await api.get('/api/jobs');
@@ -27,16 +27,28 @@ const App: React.FC = () => {
       }
     };
 
-    fetchAbilities();
+    const fetchJobAbilities = async () => {
+      try {
+        if ( selectedJobIds.length === 0 ) {
+          return;
+        }
+        const jobIdStr = selectedJobIds.join(',');
+        const response = await api.get(`/api/abilities?job_ids=${jobIdStr}`);
+        setAbilities(response.data);
+      } catch (error) {
+        console.error('Error fetching abilities:', error);
+      }
+    };
+
     fetchJobs();
-  }, []);
+    fetchJobAbilities();
+  }, [selectedJobIds]);
 
   return (
     <Container>
       <div className="mt-3">
-        <ToggleButtonList jobs={jobs} />
+        <ToggleButtonList jobs={jobs} selectedJobIds={selectedJobIds} onToggle={handleToggle} />
       </div>
-      {/*
       <Row>
         <Col>
           <h1>Ability List</h1>
@@ -74,7 +86,6 @@ const App: React.FC = () => {
           </Table>
         </Col>
       </Row>
-      */}
     </Container>
   );
 };

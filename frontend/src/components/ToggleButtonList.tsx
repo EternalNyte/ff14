@@ -9,26 +9,18 @@ interface JobItem {
 
 interface ToggleButtonListProps {
   jobs: JobItem[];
+  selectedJobIds: number[];
+  onToggle: (jobId: number) => void;
 }
 
-const ToggleButtonList: React.FC<ToggleButtonListProps> = ({ jobs }) => {
-  const [selectedJobs, setSelectedJobs] = useState<JobItem[]>([]);
-
-  const handleToggle = (job: JobItem) => {
-    const updatedJobs = selectedJobs.includes(job)
-      ? selectedJobs.filter((selected) => selected !== job)
-      : [...selectedJobs, job];
-
-    setSelectedJobs(updatedJobs);
-  };
-
+const ToggleButtonList: React.FC<ToggleButtonListProps> = ({ jobs, selectedJobIds, onToggle }) => {
   return (
-    <div>
+    <div className="btn-group" role="group">
       {jobs.map((job) => (
         <button
           key={job.id}
-          className={`btn btn-secondary ${selectedJobs.includes(job) ? 'bg-primary' : 'bg-secondary'}`}
-          onClick={() => handleToggle(job)}
+          className={`btn btn-secondary ${selectedJobIds.includes(job.id) ? 'bg-primary' : 'bg-secondary'}`}
+          onClick={() => onToggle(job.id)}
           style={{ marginRight: '5px', marginBottom: '5px' }}
         >
           {job.short_name}
