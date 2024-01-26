@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from './api';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import CheckboxList from './components/CheckboxList';
+import ToggleButtonList from './components/ToggleButtonList';
 import './App.css';
 
 const App: React.FC = () => {
@@ -33,7 +33,9 @@ const App: React.FC = () => {
 
   return (
     <Container>
-      <CheckboxList data={jobs} />
+      <div className="mt-3">
+        <ToggleButtonList jobs={jobs} />
+      </div>
       {/*
       <Row>
         <Col>

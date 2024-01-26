@@ -10,6 +10,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <div className="bg-primary text-white p-3 text-center">
+      <h1>FF14 Tools</h1>
+    </div>
     <App />
   </React.StrictMode>
 );
