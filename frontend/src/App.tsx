@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from './api';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import ToggleButtonList from './components/ToggleButtonList';
-import CsvDownloadButton from './components/CsvDownloadButton';
+import CSVDownloadButton from './components/CSVDownloadButton';
+import CopyCSVToClipboardButton from './components/CopyCSVToClipboardButton';
 import './App.css';
 
 const App: React.FC = () => {
@@ -29,7 +30,7 @@ const App: React.FC = () => {
       }
     };
 
-    const updateCsvData = (abilities: any[]) => {
+    const updateCSVData = (abilities: any[]) => {
       const headerData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
       const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id - 1 ].name,
                                                 ability.recast,
@@ -45,7 +46,7 @@ const App: React.FC = () => {
         }
         const jobIdStr = selectedJobIds.join(',');
         const response = await api.get(`/api/abilities?job_ids=${jobIdStr}`);
-        updateCsvData(response.data);
+        updateCSVData(response.data);
         setAbilities(response.data);
       } catch (error) {
         console.error('Error fetching abilities:', error);
@@ -63,7 +64,7 @@ const App: React.FC = () => {
       </div>
       <Row>
         <Col>
-          <h1>Ability List <CsvDownloadButton data={csvData}/></h1>
+          <h1>Ability List <CSVDownloadButton data={csvData}/> <CopyCSVToClipboardButton data={csvData}/></h1>
         </Col>
       </Row>
       <Row>
