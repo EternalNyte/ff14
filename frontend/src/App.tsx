@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import api from './api';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import ToggleButtonList from './components/ToggleButtonList';
+import CsvDownloadButton from './components/CsvDownloadButton';
 import './App.css';
 
 const App: React.FC = () => {
   const [abilities, setAbilities] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
+  const [csvData, setCSVData] = useState<Array<Array<string | number>>>([]);
 
   const handleToggle = async (jobId: number) => {
     const updatedJobIds = selectedJobIds.includes(jobId)
@@ -27,6 +29,15 @@ const App: React.FC = () => {
       }
     };
 
+    const updateCsvData = (abilities: any[]) => {
+      const headerData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
+      const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id - 1 ].name,
+                                                ability.recast,
+                                                ability.duration, ability.type,
+                                                ability.amount, ability.target ]);
+      setCSVData(headerData.concat(data));
+    };
+
     const fetchJobAbilities = async () => {
       try {
         if ( selectedJobIds.length === 0 ) {
@@ -34,6 +45,7 @@ const App: React.FC = () => {
         }
         const jobIdStr = selectedJobIds.join(',');
         const response = await api.get(`/api/abilities?job_ids=${jobIdStr}`);
+        updateCsvData(response.data);
         setAbilities(response.data);
       } catch (error) {
         console.error('Error fetching abilities:', error);
@@ -42,7 +54,7 @@ const App: React.FC = () => {
 
     fetchJobs();
     fetchJobAbilities();
-  }, [selectedJobIds]);
+  }, [jobs, selectedJobIds]);
 
   return (
     <Container>
@@ -51,7 +63,7 @@ const App: React.FC = () => {
       </div>
       <Row>
         <Col>
-          <h1>Ability List</h1>
+          <h1>Ability List <CsvDownloadButton data={csvData}/></h1>
         </Col>
       </Row>
       <Row>
