@@ -1,45 +1,25 @@
 #!/usr/bin/env python3
-import pandas as pd
-import numpy as np
-import pymysql
+import db
 
-user = 'ringo_ff14'
-pw = 'ff14Pswd!'
 table_name = 'jobs'
 
-# MySQL Connection Configuration
-connection = pymysql.connect(host='localhost', user=user, password=pw, database='ff14')
+connection = db.connect()
 cursor = connection.cursor()
 
-dropFKeyConstraintSql = "ALTER TABLE %s DROP FOREIGN KEY %s" % ( "abilities", "abilities_ibfk_1" );
-cursor.execute(dropFKeyConstraintSql)
+# temporarily disable job <-> abilities relationship
+drop_fkey_sql = "ALTER TABLE %s DROP FOREIGN KEY %s" % ( "abilities", "abilities_ibfk_1" );
+cursor.execute(drop_fkey_sql)
 
-# Truncate the table
-truncate_sql = "TRUNCATE TABLE %s" % table_name
-cursor.execute(truncate_sql)
+db.clear_table(table_name, connection)
 
-# Read CSV and Insert Data
 csv_filename = '../data/ff14_jobs.csv'
-df = pd.read_csv(csv_filename)
+df = db.csv_to_df(csv_filename)
 
-df.replace({np.nan: None}, inplace=True)
+db.insert_df_into_table(df, table_name, connection)
 
-# Get column names from the CSV file
-columns = list(df.columns)
+# add back job <-> abilities relationship
+add_fkey_sql = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (job_id) REFERENCES jobs(id)" % ( "abilities", "abilities_ibfk_1" );
+cursor.execute(add_fkey_sql)
 
-# Generate the INSERT SQL command dynamically
-insert_sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({', '.join(['%s']*len(columns))})"
-
-# Insert data into the MySQL table
-for index, row in df.iterrows():
-    values = tuple(row[columns])
-    cursor.execute(insert_sql, values)
-
-dropFKeyConstraintSql = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (job_id) REFERENCES jobs(id)" % ( "abilities", "abilities_ibfk_1" );
-cursor.execute(dropFKeyConstraintSql)
-
-# Commit changes and close connections
-connection.commit()
-cursor.close()
-connection.close()
+db.commit_and_close_connection( connection )
 
