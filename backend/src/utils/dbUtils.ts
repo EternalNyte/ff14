@@ -5,7 +5,7 @@ import { QueryError, RowDataPacket } from 'mysql2/promise';
 export const queryAndJson = (query: string, res: Response, values?: (number | string)[][], errorStr?: string) => {
   errorStr = errorStr || "Internal Server Error";
 
-  const queryCallback = (error: QueryError, results: RowDataPacket[]) => {
+  const queryCallback = (error: QueryError | null, results: RowDataPacket[]) => {
     if (error) {
       return res.status(500).json({ error: errorStr });
     }
