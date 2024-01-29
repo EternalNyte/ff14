@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from './api';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import ToggleButtonList from './components/ToggleButtonList';
+import JobToggleButtonList from './components/JobToggleButtonList';
 import CSVDownloadButton from './components/CSVDownloadButton';
 import CopyCSVToClipboardButton from './components/CopyCSVToClipboardButton';
 import './App.css';
@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
   const [csvData, setCSVData] = useState<Array<Array<string | number>>>([]);
 
-  const handleToggle = async (jobId: number) => {
+  const handleToggle = async (jobId: number): Promise<void> =>{
     const updatedJobIds = selectedJobIds.includes(jobId)
       ? selectedJobIds.filter((id) => id !== jobId)
       : [...selectedJobIds, jobId];
@@ -42,6 +42,8 @@ const App: React.FC = () => {
     const fetchJobAbilities = async () => {
       try {
         if ( selectedJobIds.length === 0 ) {
+          updateCSVData([]);
+          setAbilities([]);
           return;
         }
         const jobIdStr = selectedJobIds.join(',');
@@ -55,12 +57,12 @@ const App: React.FC = () => {
 
     fetchJobs();
     fetchJobAbilities();
-  }, [jobs, selectedJobIds]);
+  }, [selectedJobIds]);
 
   return (
     <Container>
       <div className="mt-3">
-        <ToggleButtonList jobs={jobs} selectedJobIds={selectedJobIds} onToggle={handleToggle} />
+        <JobToggleButtonList items={jobs} selectedIds={selectedJobIds} onToggle={handleToggle} />
       </div>
       <Row>
         <Col>
