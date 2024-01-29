@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { getAbilities } from '../controllers/abilityController';
 const router = express.Router();
-const abilityController = require('../controllers/abilityController');
 
-router.get('/abilities', abilityController.getAbilities);
+router.get('/abilities', getAbilities);
 
 export default router;
