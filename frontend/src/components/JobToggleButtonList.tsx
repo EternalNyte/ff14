@@ -1,17 +1,13 @@
 import React from 'react';
 import ToggleButtonList from './ToggleButtonList';
+import {JobData} from '../types/dataTypes';
 
-interface JobItem {
-  id: number;
-  short_name: string;
-}
-
-class JobToggleButtonList extends ToggleButtonList<JobItem, number> {
-  itemToId(item: JobItem): number {
+class JobToggleButtonList extends ToggleButtonList<JobData, number> {
+  itemToId(item: JobData): number {
     return item.id;
   }
 
-  renderLabel(job: JobItem): React.ReactNode {
+  renderLabel(job: JobData): React.ReactNode {
     return `${job.short_name}`;
   }
 };
