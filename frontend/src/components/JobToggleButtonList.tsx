@@ -3,7 +3,6 @@ import ToggleButtonList from './ToggleButtonList';
 
 interface JobItem {
   id: number;
-  label: string;
   short_name: string;
 }
 

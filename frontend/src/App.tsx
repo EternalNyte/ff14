@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
   const [csvData, setCSVData] = useState<Array<Array<string | number>>>([]);
+  const [hasFetchedJobs, setHasFetchedJobs] = useState(false);
 
   const handleToggle = async (jobId: number): Promise<void> =>{
     const updatedJobIds = selectedJobIds.includes(jobId)
@@ -20,16 +21,17 @@ const App: React.FC = () => {
     setSelectedJobIds(updatedJobIds);
   };
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await api.get('/api/jobs');
-        setJobs(response.data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    };
+  const fetchJobs = async () => {
+    try {
+      const response = await api.get('/api/jobs');
+      setJobs(response.data);
+      setHasFetchedJobs(true);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
 
+  useEffect(() => {
     const updateCSVData = (abilities: any[]) => {
       const headerData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
       const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id - 1 ].name,
@@ -55,9 +57,11 @@ const App: React.FC = () => {
       }
     };
 
-    fetchJobs();
+    if (!hasFetchedJobs) {
+      fetchJobs();
+    }
     fetchJobAbilities();
-  }, [selectedJobIds]);
+  }, [hasFetchedJobs, jobs, selectedJobIds]);
 
   return (
     <Container>
