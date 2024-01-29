@@ -1,24 +1,17 @@
 import { Request, Response } from 'express';
-import { connection } from '../db';
-import { RowDataPacket } from 'mysql2/promise';
+import { queryAndJson } from '../utils/dbUtils';
 
 export const getAbilities = (req: Request, res: Response) => {
   const jobIds = req.query.job_ids as string;
+
+  let query: string;
+  let params: number[][] | undefined;
   if (jobIds) {
-    const ids = jobIds.split(',').map((id) => parseInt(id, 10));
-    connection.query('SELECT * FROM abilities WHERE job_id IN (?)', [ids], (error: any, results: RowDataPacket[]) => {
-      if (error) {
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-      res.json(results);
-    });
+    query = 'SELECT * FROM abilities WHERE job_id IN (?)';
+    params = [jobIds.split(',').map((id) => parseInt(id, 10))];
   } else {
-    connection.query('SELECT * FROM abilities', (error: any, results: RowDataPacket[]) => {
-      if (error) {
-        return res.status(500).json({ error: 'Internal Server Errors' });
-      }
-      res.json(results);
-    });
+    query = 'SELECT * FROM abilities';
   }
+  queryAndJson(query, res, params);
 };
 
