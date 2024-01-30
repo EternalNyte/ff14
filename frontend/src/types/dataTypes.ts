@@ -5,6 +5,15 @@ export type JobData = {
 }
 
 export type AbilityData = {
-
+  id: number;
+  name: string;
+  job_id: number;
+  recast: number;
+  duration: number;
+  type: string;
+  amount: string;
+  target: string;
 }
+
+export type CSVData = (string | number)[][];
 

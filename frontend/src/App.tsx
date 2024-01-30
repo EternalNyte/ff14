@@ -1,18 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import api from './api';
+import './App.css';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import JobToggleButtonList from './components/JobToggleButtonList';
+
+import api from './api';
+import { AbilityData, CSVData, JobData } from './types/dataTypes';
 import CSVDownloadButton from './components/CSVDownloadButton';
 import CopyCSVToClipboardButton from './components/CopyCSVToClipboardButton';
-import './App.css';
+import JobToggleButtonList from './components/JobToggleButtonList';
 
 const App: React.FC = () => {
-  const [abilities, setAbilities] = useState<any[]>([]);
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
-  const [csvData, setCSVData] = useState<Array<Array<string | number>>>([]);
-  const [hasFetchedJobs, setHasFetchedJobs] = useState(false);
+  const [jobs, setJobs] = useState<JobData[]>([]);
+  const maxRetries = 3;
 
+  // Mount jobs from api
+  useEffect(() => {
+    let retryCount = 0;
+    const fetchJobs = async () => {
+      try {
+        const response = await api.get('/api/jobs');
+
+        const jobArray: JobData[] = [];
+        response.data.forEach((job: JobData) => {
+          jobArray[ job.id ] = job;
+        });
+
+        setJobs( jobArray );
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+
+        // 3 tries total
+        if (retryCount < maxRetries) {
+          retryCount++;
+          setTimeout(fetchJobs, 2000); // Retry after a 2-second delay
+        }
+      }
+    };
+
+    fetchJobs();
+  }, [] );
+
+  const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
+  // Pressing a Job Button toggles it in the selected jobs list
   const handleToggle = async (jobId: number): Promise<void> =>{
     const updatedJobIds = selectedJobIds.includes(jobId)
       ? selectedJobIds.filter((id) => id !== jobId)
@@ -21,20 +49,14 @@ const App: React.FC = () => {
     setSelectedJobIds(updatedJobIds);
   };
 
-  const fetchJobs = async () => {
-    try {
-      const response = await api.get('/api/jobs');
-      setJobs(response.data);
-      setHasFetchedJobs(true);
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    }
-  };
+  const [abilities, setAbilities] = useState<AbilityData[]>([]);
+  const [csvData, setCSVData] = useState<CSVData>([]);
 
+  // Update ability table and csv data when jobs are selected/unselected
   useEffect(() => {
     const updateCSVData = (abilities: any[]) => {
-      const headerData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
-      const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id - 1 ].name,
+      const headerData: CSVData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
+      const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id ].name,
                                                 ability.recast,
                                                 ability.duration, ability.type,
                                                 ability.amount, ability.target ]);
@@ -57,11 +79,8 @@ const App: React.FC = () => {
       }
     };
 
-    if (!hasFetchedJobs) {
-      fetchJobs();
-    }
     fetchJobAbilities();
-  }, [hasFetchedJobs, jobs, selectedJobIds]);
+  }, [jobs, selectedJobIds]);
 
   return (
     <Container>
@@ -93,7 +112,7 @@ const App: React.FC = () => {
                 <tr key={ability.id}>
                   <td>{ability.id}</td>
                   <td>{ability.name}</td>
-                  <td>{jobs[ability.job_id-1].name}</td>
+                  <td>{jobs[ability.job_id].name}</td>
                   <td>{ability.recast}</td>
                   <td>{ability.duration}</td>
                   <td>{ability.type}</td>
