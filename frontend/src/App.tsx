@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 
-import api from './api';
+import api, { fetchJobs } from './utils/api';
 import { AbilityData, CSVData, JobData } from './types/dataTypes';
 import CSVDownloadButton from './components/CSVDownloadButton';
 import CopyCSVToClipboardButton from './components/CopyCSVToClipboardButton';
@@ -10,33 +10,13 @@ import JobToggleButtonList from './components/JobToggleButtonList';
 
 const App: React.FC = () => {
   const [jobs, setJobs] = useState<JobData[]>([]);
-  const maxRetries = 3;
-
   // Mount jobs from api
   useEffect(() => {
-    let retryCount = 0;
-    const fetchJobs = async () => {
-      try {
-        const response = await api.get('/api/jobs');
-
-        const jobArray: JobData[] = [];
-        response.data.forEach((job: JobData) => {
-          jobArray[ job.id ] = job;
-        });
-
-        setJobs( jobArray );
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-
-        // 3 tries total
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(fetchJobs, 2000); // Retry after a 2-second delay
-        }
-      }
-    };
-
-    fetchJobs();
+    fetchJobs().then((jobs: JobData[]) => {
+      setJobs(jobs);
+    }).catch((error) => {
+      console.error((error as Error).message);
+    });
   }, [] );
 
   const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
