@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import api from './api';
+import './App.css';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import ToggleButtonList from './components/ToggleButtonList';
+
+import api, { fetchJobs } from './utils/api';
+import { AbilityData, CSVData, JobData } from './types/dataTypes';
 import CSVDownloadButton from './components/CSVDownloadButton';
 import CopyCSVToClipboardButton from './components/CopyCSVToClipboardButton';
-import './App.css';
+import JobToggleButtonList from './components/JobToggleButtonList';
 
 const App: React.FC = () => {
-  const [abilities, setAbilities] = useState<any[]>([]);
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
-  const [csvData, setCSVData] = useState<Array<Array<string | number>>>([]);
+  const [jobs, setJobs] = useState<JobData[]>([]);
+  // Mount jobs from api
+  useEffect(() => {
+    fetchJobs().then((jobs: JobData[]) => {
+      setJobs(jobs);
+    }).catch((error) => {
+      console.error((error as Error).message);
+    });
+  }, [] );
 
-  const handleToggle = async (jobId: number) => {
+  const [selectedJobIds, setSelectedJobIds] = useState<number[]>([]);
+  // Pressing a Job Button toggles it in the selected jobs list
+  const handleToggle = async (jobId: number): Promise<void> =>{
     const updatedJobIds = selectedJobIds.includes(jobId)
       ? selectedJobIds.filter((id) => id !== jobId)
       : [...selectedJobIds, jobId];
@@ -20,19 +29,14 @@ const App: React.FC = () => {
     setSelectedJobIds(updatedJobIds);
   };
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await api.get('/api/jobs');
-        setJobs(response.data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    };
+  const [abilities, setAbilities] = useState<AbilityData[]>([]);
+  const [csvData, setCSVData] = useState<CSVData>([]);
 
+  // Update ability table and csv data when jobs are selected/unselected
+  useEffect(() => {
     const updateCSVData = (abilities: any[]) => {
-      const headerData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
-      const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id - 1 ].name,
+      const headerData: CSVData = [["Name", "Job", "Recast", "Duration", "Type", "Amount", "Target"]];
+      const data = abilities.map((ability) => [ ability.name, jobs[ ability.job_id ].name,
                                                 ability.recast,
                                                 ability.duration, ability.type,
                                                 ability.amount, ability.target ]);
@@ -42,6 +46,8 @@ const App: React.FC = () => {
     const fetchJobAbilities = async () => {
       try {
         if ( selectedJobIds.length === 0 ) {
+          updateCSVData([]);
+          setAbilities([]);
           return;
         }
         const jobIdStr = selectedJobIds.join(',');
@@ -53,14 +59,13 @@ const App: React.FC = () => {
       }
     };
 
-    fetchJobs();
     fetchJobAbilities();
   }, [jobs, selectedJobIds]);
 
   return (
     <Container>
       <div className="mt-3">
-        <ToggleButtonList jobs={jobs} selectedJobIds={selectedJobIds} onToggle={handleToggle} />
+        <JobToggleButtonList items={jobs} selectedIds={selectedJobIds} onToggle={handleToggle} />
       </div>
       <Row>
         <Col>
@@ -87,7 +92,7 @@ const App: React.FC = () => {
                 <tr key={ability.id}>
                   <td>{ability.id}</td>
                   <td>{ability.name}</td>
-                  <td>{jobs[ability.job_id-1].name}</td>
+                  <td>{jobs[ability.job_id].name}</td>
                   <td>{ability.recast}</td>
                   <td>{ability.duration}</td>
                   <td>{ability.type}</td>
