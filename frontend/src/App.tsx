@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Col, Collapse, Container, Row, Table } from 'react-bootstrap';
 import './App.css';
-import { Container, Row, Col, Table } from 'react-bootstrap';
 
 import api, { fetchJobs } from './utils/api';
 import { AbilityData, CSVData, JobData } from './types/dataTypes';
@@ -62,6 +62,12 @@ const App: React.FC = () => {
     fetchJobAbilities();
   }, [jobs, selectedJobIds]);
 
+  const [isCollapsed, setCollapsed] = useState(false);
+
+  const handleToggleCollapse = () => {
+    setCollapsed(!isCollapsed);
+  }
+
   return (
     <Container>
       <div className="mt-3">
@@ -69,39 +75,51 @@ const App: React.FC = () => {
       </div>
       <Row>
         <Col>
-          <h1>Ability List <CSVDownloadButton data={csvData}/> <CopyCSVToClipboardButton data={csvData}/></h1>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer', // Set cursor to pointer on hover
+            }}
+            onClick={handleToggleCollapse}>
+            <h1>
+              Ability List <CSVDownloadButton data={csvData}/> <CopyCSVToClipboardButton data={csvData}/>
+            </h1>
+          </div>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Job</th>
-                <th>Recast</th>
-                <th>Duration</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Target</th>
-              </tr>
-            </thead>
-            <tbody>
-              {abilities.map((ability) => (
-                <tr key={ability.id}>
-                  <td>{ability.id}</td>
-                  <td>{ability.name}</td>
-                  <td>{jobs[ability.job_id].name}</td>
-                  <td>{ability.recast}</td>
-                  <td>{ability.duration}</td>
-                  <td>{ability.type}</td>
-                  <td>{ability.amount}</td>
-                  <td>{ability.target}</td>
+          <Collapse in={!isCollapsed}>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Job</th>
+                  <th>Recast</th>
+                  <th>Duration</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Target</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {abilities.map((ability) => (
+                  <tr key={ability.id}>
+                    <td>{ability.id}</td>
+                    <td>{ability.name}</td>
+                    <td>{jobs[ability.job_id].name}</td>
+                    <td>{ability.recast}</td>
+                    <td>{ability.duration}</td>
+                    <td>{ability.type}</td>
+                    <td>{ability.amount}</td>
+                    <td>{ability.target}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Collapse>
         </Col>
       </Row>
     </Container>
