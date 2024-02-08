@@ -1,3 +1,12 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Construct the path to the .env file
+const envPath = path.resolve(__dirname, '../../.env');
+
+// Load environment variables from the .env file
+dotenv.config({ path: envPath });
+
 import express from 'express';
 import cors from 'cors';
 import mainRoutes from './routes/mainRoutes';
